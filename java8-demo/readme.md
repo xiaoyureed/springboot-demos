@@ -1,0 +1,87 @@
+```
+java8 new feature 
+
+- default methods for interface 接口内允许默认实现, 实现fluent api
+- Lambda expression
+    - lambda scope
+        - accessing local variables - final可以不加, 最好加上, 必须保证变量只读
+        - accessing fields and static variables - 可读可写
+        - accessing default interface methods - lambda 中无法使用接口默认方法
+- method/constructor reference
+    - 静态方法引用          -- ClassName:methodName
+    - 实例方法引用
+        - 通过类型对实例方法引用  -- ClassName::methodName
+        - 通过实例对实例方法引用  -- instance::methodName (方法内的逻辑可能和 instance 有强联系)
+    - 超类上的方法引用      -- super::methodName
+    - 构造方法引用          -- ClassName::new
+    - 数组构造方法引用      -- TypeName[]::new
+- functional interface
+    - built-in functional interface
+        - Predicates - accept one arg and produce a predicate (and, or, negtive, isquals), 代表一段逻辑判断
+        - Functions - accept one arg and produce a result (andThen一个一个接着执行, compose从最内层开始执行), 代表一个功能
+            - BiFunction - 接收 两个参数
+        - Suppliers - do not accept any arg, produce a object of a given type, 表示一个对象工厂
+        - Consumers - accept one arg and perform some operations on it, 消费者
+        - Comparators - 比较器
+- optional - a container for a value, 并非functional interface, 用于防止空指针异常
+- stream - represents a sequence of elements, on which some operations can be performed; stream opts are either 中间操作 and 终止操作; 流都是一次性的, 一旦 terminal opts 调用, 流就关闭了, 再用就会异常, 可通过构造一个 Suplier 来重用 stream;
+    - 中间操作(intermediate opts) - 只有存在 terminal opts 时才会实际执行; 并且是每个element走完整个链条, 才会进入下一个element(利于减少操作数, 比如对于anyMatch操作, 只要一个元素符合就返回最总结果true)
+        - Filter - accept a predicate and return a filtered stream 
+            - 一般放在链条首位, 减少操作的元素个数
+            - 条件返回为true, 放行; false 则拦截
+        - Sorted - accept a comparator or nothing and return a sorted view of stream; 只是生成视图, 并不改变原始collection
+        - Map - accept a function and perform on each element of the stream
+    - 终点操作(terminal opts)
+        - forEach - accept a consumer to be executed for each element in the stream 
+        - Match - accept a predicate and return a boolean result; 检查这个stream中的每个元素是否符合predicate
+            - anyMatch 任何一个符合
+            - allMatch 全都符合
+            - noneMatch 没有符合的元素
+        - Count - return the number of element as a long value
+        - Reduce - accept a function and return a optional representing the reducing value;
+        - Collect - accept a collector, transfer a stream to collection
+            - 有许多 builtin 的 collector, 如 Collectors.toList()...
+    - sequential stream(串行流) 
+        - 实例方法 Collection.stream()
+        - 静态方法 Arrays.stream(arr)
+        - 静态方法 Stream.of(...)
+    - Parallel Streams(并行流) 
+        - Collection.parallelStream()
+        - Stream.parallel()
+- maps 
+    - `map.keySet().stream()`, `map.values().stream()` and `map.entrySet().stream()`.
+    - putIfAbsent(key, value) - 如果key没有在map中, 存入, 如果key存在map了, 返回oldValue; 主要是免除了null check
+    - merge(key, value, biFunction) - 根据key查value, 如果没查到, 保存, 如果查到了, 根据biFunction构造newValue保存
+    - forEach - accept a consumer
+    - computeIfPresent(key, biFunction) - 接收一个key, 一个biFunction, 检查key是否null, 找到这个entry, 根据biFunction计算出新的value重新put进map
+    - computeIfAbsent - 如果根据key获取不到value, 则计算新的value并put进去
+    - remove(key, value) - value符合才移除key对应的元素
+    - getOrDefault(key, def_value) - 没有就返回默认值
+- Date api - java.time包下, 线程安全
+    - Clock - 时钟, 时间统计
+    - Timezones - 时区
+    - LocalTime - 没有time zone 的时间
+    - LocalDate - 日期
+    - LocalDateTime - 日期时间
+- Annotations 
+    - 注解里面允许注解, 允许重复
+    - 注解允许放在新的地方: ElementType.TYPE_PARAMETER, ElementType.TYPE_USE
+- CompletableFuture - 增强版本的 Future
+    - 通知机制, 通过 new 创建一个 future
+        - future.get() 获取最终结果, 会阻塞当前thread, 等待完成
+        - future.complet(result) 任务完成
+    - 异步任务, 通过 静态方法构造一个future
+        - 没有指定 Executor 的方法会使用 ForkJoinPool.commonPool() 作为它的线程池执行异步代码
+            - CompletableFuture.supplyAsync(xxx) 构造future, 有返回值
+            - CompletableFuture.runAsync(xxx) 构造future, 无返回值
+        - 指定 executor
+            - runAsync(Runnable runnable, Executor executor)
+            - supplyAsync(Supplier<U> supplier, Executor executor)
+    - 流式调用
+    - 异常处理
+    - 多个future 联合
+        - compose 两个future 是依赖关系
+        - combine 两个future是独立的
+
+
+```

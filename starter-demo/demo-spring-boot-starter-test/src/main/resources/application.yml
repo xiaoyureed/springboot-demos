@@ -1,0 +1,5 @@
+i-service:
+  enabled: true
+  name: demo2
+random-generator:
+  type: boolean

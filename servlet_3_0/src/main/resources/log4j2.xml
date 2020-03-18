@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <!--
+- 日志输出位置信息：includeLocation = "true"
+
+    如果需要位置信息，需要在所有相关记录器（包括根记录器）的配置中设置“includeLocation = true”
+
+- additivity: 关闭 logger 继承机制 - https://blog.csdn.net/qq_32364027/article/details/53187468
+-->
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <!--如果不指定level, 继承 root -->
+        <!--name 有继承机制: name为org.apache.commons的logger会继承name为org.apache的logger。-->
+        <Logger name="io.github.xiaoyureed" level="debug"/> <!--attention: make sure that package name is correct.-->
+
+        <Root level="debug"><!--root default level: info-->
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

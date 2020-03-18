@@ -1,0 +1,26 @@
+###
+#   Database Settings
+###
+spring:
+  datasource:
+    # http://localhost:8080/console \u8BBF\u95EE\u63A7\u5236\u53F0
+    # \u82E5 url\u4E3A jdbc:h2:file:c:/h2/example-app \u4F7F\u7528\u57FA\u4E8E\u6587\u4EF6\u7684\u5B58\u50A8\u800C\u4E0D\u662F\u5185\u5B58
+    url: jdbc:h2:mem:example-app;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    platform: h2
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+    schema: classpath:db/schema.sql # jpa\u7684 ddl-auto \u6253\u5F00\u4E86\u5C31\u4E0D\u9700\u8981\u8981\u4F7F\u7528\u8FD9\u4E2A\u4E86
+    data: classpath:db/data.sql
+
+  ###
+  #   H2 Settings
+  ###
+  h2:
+    console:
+      # default to true
+      enabled: true
+      path: /console # default: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false # \u4E0D\u5141\u8BB8\u8FDC\u7A0B\u8BBF\u95EE
