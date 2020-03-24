@@ -1,0 +1,11 @@
+spring:
+  thymeleaf:
+    mode: HTML5
+    encoding: UTF-8
+    cache: false
+  jpa:
+    show-sql-true: true
+  datasource:
+    platform: h2
+    schema: classpath:schema.sql
+    data: classpath:data.sql

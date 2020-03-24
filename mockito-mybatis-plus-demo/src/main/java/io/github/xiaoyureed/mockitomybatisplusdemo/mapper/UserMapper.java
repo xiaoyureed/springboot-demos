@@ -15,8 +15,10 @@ public interface UserMapper extends BaseMapper<User> {
         if (condition == null) {
             return null;
         }
-        return selectOne(new LambdaQueryWrapper<User>()
-                .eq(!StringUtils.isEmpty(condition.getName().trim()), User::getName, condition.getName())
-                .eq(!StringUtils.isEmpty(condition.getPwd().trim()), User::getPwd, condition.getPwd()));
+        return selectOne(new LambdaQueryWrapper<User>() // 泛型一定要加上, 否则编译错误
+                .eq(!StringUtils.isEmpty(condition.getName().trim()),
+                        User::getName, condition.getName())
+                .eq(!StringUtils.isEmpty(condition.getPwd().trim()),
+                        User::getPwd, condition.getPwd()));
     }
 }

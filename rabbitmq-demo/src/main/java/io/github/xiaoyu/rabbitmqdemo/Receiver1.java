@@ -15,4 +15,9 @@ public class Receiver1 {
     public void process(String hello) {
         System.out.println("receiver1: " + hello);
     }
+
+    @RabbitHandler
+    public void process(User user) {
+        System.out.println(">>> receiver1: " + user);
+    }
 }

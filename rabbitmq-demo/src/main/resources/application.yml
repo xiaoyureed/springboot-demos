@@ -1,4 +1,3 @@
-
 server:
   port: 9010
 #eureka:
@@ -11,10 +10,11 @@ server:
 #      defaultZone: http://localhost:9001/eureka/
 spring:
   application:
-    name: springCloud-rabbitMq
+    name: rabbitmq-demo
   rabbitmq:
-    host: 127.0.0.1
+    host: localhost
     port: 5672
     username: guest
     password: guest
-    virtual-host: /
+    virtual-host: / # default to /
+#    virtual-host: /vh_demo

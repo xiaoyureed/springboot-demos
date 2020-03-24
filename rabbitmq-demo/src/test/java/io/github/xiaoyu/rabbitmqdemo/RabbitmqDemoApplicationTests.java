@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -17,14 +19,11 @@ public class RabbitmqDemoApplicationTests {
 
     @Test
     public void testHello() {
-        sender.send1("消息1" + new Date());
-    }
-
-    @Test
-    public void testOneToMany() {
-        for (int i = 0; i < 50; i++) {
-            sender.send1("消息 " + i);
-        }
+        IntStream.rangeClosed(1, 50).forEach(index -> {
+            String msg = "msg" + index;
+            // sender.sendMessage(msg);
+            sender.send1(msg);
+        });
     }
 
     @Test

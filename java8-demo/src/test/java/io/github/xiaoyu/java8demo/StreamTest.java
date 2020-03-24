@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -39,6 +40,24 @@ public class StreamTest {
                 new Person("bbb2", 12),
                 new Person("bbb3", 44),
                 new Person("ccc1", 22));
+    }
+
+    @Test
+    public void t2() {
+        // Stream<String> hello = Optional.of(new String[] {"hello", "aa", "bb"}).map(Stream::of).orElseGet(Stream::empty);
+        Supplier<Stream<String>> supplier = () -> Stream.of("hello", "aa", "bb");
+        boolean                  aa       = supplier.get().allMatch(s -> s.equalsIgnoreCase("aa"));
+        boolean                  aa1      = supplier.get().anyMatch(s -> s.equalsIgnoreCase("aa"));
+        System.out.println(aa);
+        System.out.println(aa1);
+
+        IntStream.range(1, 4)
+                .forEach(System.out::println);
+
+        Arrays.stream(new int[] {1, 2, 3})
+                .map(n -> 2 * n + 1)
+                .average()
+                .ifPresent(System.out::println);
     }
 
     @Test

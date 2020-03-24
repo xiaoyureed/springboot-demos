@@ -14,6 +14,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +23,11 @@ import java.util.stream.Stream;
  * @since 1.0
  */
 public class Java7Test {
+    @Test
+    public void testSleep() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(60);
+    }
+
     @Test
     public void testPaths() {
         Path path  = Paths.get(".");// 表示当前项目根路径, 等同 System.getProperty("user.dir"), 等同 new File("").getAbsoblutePath
