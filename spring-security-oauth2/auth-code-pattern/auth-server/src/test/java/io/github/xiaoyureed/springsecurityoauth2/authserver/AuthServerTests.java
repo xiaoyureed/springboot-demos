@@ -1,4 +1,4 @@
-package io.github.xiaoyureed.springsecuritymybatisplustoken;
+package io.github.xiaoyureed.springsecurityoauth2.authserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,23 +8,21 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 /**
  * @author xiaoyu
- * date: 2020/3/22
+ * date: 2020/3/24
  */
 @SpringBootTest
-public class SpringSecurityMybatisPlusAppTests {
+public class AuthServerTests {
+
     @Autowired
     private UserMapper userMapper;
 
     @Test
-    public void testMybatisPlus() {
-        User condition = new User();
-        condition.setUsername("aa");
-        List<User> users = userMapper.conditionalQuery(condition);
-        // users.forEach(System.out::println);
+    public void testMybatis() {
+        User user = new User();
+        user.setUsername("user");
+        List<User> users = userMapper.conditionalQuery(user);
         assertThat(users.size()).isEqualTo(1);
     }
-
 }

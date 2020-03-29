@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * date: 2020/3/22
  */
 @SpringBootTest
-public class SpringSecurityMybatisPlusAppTests {
+public class SpringSecurityMybatisPlusTokenAppTests {
     @Autowired
     private UserMapper userMapper;
 

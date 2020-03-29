@@ -1,0 +1,29 @@
+spring:
+  profiles:
+    active: dev
+
+---
+spring:
+  application:
+    name: redis-session-demo
+  redis:
+    # Redis db index, default to 0
+    database: 0
+    # cannot use localhost, it is a bug of wsl docker
+    host: 172.25.152.32
+    port: 6379
+    password:
+    # springboot 2 use lettuce instead of jedis
+    lettuce:
+      pool:
+        # max connection, minus means no limitation, default 8
+        max-active: 8
+        # max block waiting time, default -1, minus means no limitation
+        max-wait: -1
+        # max idle connection, default 8
+        max-idle: 8
+        # min idle conn, default 0
+        min-idle: 0
+  profiles: dev
+server:
+  port: 8080

@@ -1,4 +1,4 @@
-package io.github.xiaoyureed.springsecuritymybatisplus;
+package io.github.xiaoyureed.springsecuritymybatisplustoken;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

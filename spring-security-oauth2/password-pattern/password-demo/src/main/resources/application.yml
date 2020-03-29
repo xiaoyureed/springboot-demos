@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: dev
+---
+spring:
+  profiles: dev
+  application:
+    name: password-demo
+  redis:
+    host: 172.25.152.32
+    port: 6379
+    database: 0
+    password:
+server:
+  port: 8080
