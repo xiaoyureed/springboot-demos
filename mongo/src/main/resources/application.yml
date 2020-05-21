@@ -1,0 +1,24 @@
+spring:
+  profiles:
+    active: dev
+
+---
+server:
+  port: 8080
+spring:
+  application:
+    name: mongo
+  data:
+    # spring.data.mongodb.uri=mongodb://name:pass@localhost:27017/test
+    # cluster                 mongodb://user:pwd@ip1:port1,ip2:port2/database
+    mongodb:
+      uri: mongodb://tiger:tiger@172.24.208.103:27017/demo
+#      host: 172.24.208.103
+#      port: 27017
+#      username: mongoadmin
+#      password: mongoadmin
+#      database: demo
+  profiles: dev
+
+
+

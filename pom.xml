@@ -2,9 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <modules>
-        <module>spring-security-oauth2/password-pattern/password-demo</module>
-    </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -41,6 +38,11 @@
         <!--<module>spring-boot-demo</module>-->
     <!--<module>spring-security-oauth2/auth-server</module>-->
         <!--<module>common</module>-->
+    <!--<module>spring-security-oauth2/password-pattern/password-demo</module>-->
+    <!--<module>mongo</module>-->
+    <!--<module>rw-separate-demo</module>-->
+    <!--<module>rw-separate-starter</module>-->
+    <!--<module>crawler</module>-->
     <!--</modules>-->
 
     <properties>
@@ -84,6 +86,20 @@
                 <artifactId>spring-security-oauth2</artifactId>
                 <version>2.3.6.RELEASE</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.12</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.13.1</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
