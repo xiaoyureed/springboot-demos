@@ -43,6 +43,7 @@
     <!--<module>rw-separate-demo</module>-->
     <!--<module>rw-separate-starter</module>-->
     <!--<module>crawler</module>-->
+<!--    <module>schedule-demo</module>-->
     <!--</modules>-->
 
     <properties>
