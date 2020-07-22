@@ -8,12 +8,12 @@ import java.lang.reflect.Array;
  * @author xiaoyu
  * @since 1.0
  */
-public class ArrayQueue<T> {
+public class ArrayQueue1<T> {
 
     private T[] data;
     private int count;
 
-    public ArrayQueue(Class<T> clazz, int size) {
+    public ArrayQueue1(Class<T> clazz, int size) {
         Object newInstance = Array.newInstance(clazz, size);
         data = (T[]) newInstance;
         count = 0;

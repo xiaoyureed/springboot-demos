@@ -1,6 +1,7 @@
 package io.github.xiaoyureed.concurrentjava;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author xiaoyu
@@ -22,7 +23,7 @@ public class DemoTest {
 
     @Test
     public void testClassName() {
-        // 对于 数组类型的类，类名 “[” + "基本类型or L" + 引用类型类名
+        // 对于 数组类型的类，类名 “[” + "基本类型 or L" + 引用类型类名
         byte[]   bytes  = new byte[1024];
         Object[] objArr = new Object[10];
         System.out.println(">>> bytes name: " + bytes.toString());
