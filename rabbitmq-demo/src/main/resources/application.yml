@@ -1,20 +1,10 @@
-server:
-  port: 9010
-#eureka:
-#  instance:
-#    hostname: localhost
-#  client:
-#    register-with-eureka: true
-#    fetch-registry: false
-#    service-url:
-#      defaultZone: http://localhost:9001/eureka/
 spring:
   application:
     name: rabbitmq-demo
   rabbitmq:
     host: localhost
     port: 5672
-    username: guest
-    password: guest
-    virtual-host: / # default to /
+#    username: guest
+#    password: guest
+    virtual-host: / # 默认就是连接到 / 这个虚拟主机, docker 启动的 rabbitmq 若不指定默认就是 "/"虚拟主机
 #    virtual-host: /vh_demo
