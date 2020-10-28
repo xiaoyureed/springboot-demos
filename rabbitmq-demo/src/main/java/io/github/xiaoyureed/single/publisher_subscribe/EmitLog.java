@@ -31,6 +31,7 @@ public class EmitLog {
 
             // 指定消息发送给哪个路由器
             // 没有指定 queue name
+            // 不必传递 routing key, 对于 fanout 类型的 ex, 传了也会忽略
             channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes(StandardCharsets.UTF_8));
             System.out.println(" [x] Sent '" + message + "'");
         }

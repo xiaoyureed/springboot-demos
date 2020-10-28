@@ -16,7 +16,7 @@ public class ReceiveLogTopic_1 {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection = factory.newConnection();
-        Channel    channel    = connection.createChannel();
+        Channel channel = connection.createChannel();
 
         channel.exchangeDeclare(EXCHANGE_NAME, "topic");
         String queueName = channel.queueDeclare().getQueue();
@@ -29,6 +29,7 @@ public class ReceiveLogTopic_1 {
             String message = new String(delivery.getBody(), "UTF-8");
             System.out.println(" [x] Received '" + delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
         };
-        channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
+        channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+        });
     }
 }

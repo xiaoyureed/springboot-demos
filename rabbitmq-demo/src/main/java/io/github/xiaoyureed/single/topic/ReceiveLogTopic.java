@@ -16,11 +16,14 @@ public class ReceiveLogTopic {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection = factory.newConnection();
-        Channel    channel    = connection.createChannel();
+        Channel channel = connection.createChannel();
 
         channel.exchangeDeclare(EXCHANGE_NAME, "topic");
         String queueName = channel.queueDeclare().getQueue();
 
+        // routingKey必须由点分开
+        // 【*】表示 一个单词(不是字符)
+        // 【#】表示0个或多个单词
         channel.queueBind(queueName, EXCHANGE_NAME, "*.*.aa");
         channel.queueBind(queueName, EXCHANGE_NAME, "*.*.xx");
 
@@ -30,6 +33,7 @@ public class ReceiveLogTopic {
             String message = new String(delivery.getBody(), "UTF-8");
             System.out.println(" [x] Received '" + delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
         };
-        channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
+        channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+        });
     }
 }

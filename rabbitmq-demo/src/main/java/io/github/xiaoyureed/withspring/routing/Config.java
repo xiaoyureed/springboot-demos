@@ -1,4 +1,4 @@
-package io.github.xiaoyureed.withspring.publisher_subscribe;
+package io.github.xiaoyureed.withspring.routing;
 
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +16,8 @@ public class Config {
      * @return
      */
     @Bean
-    public FanoutExchange fanout() {
-        return new FanoutExchange("tut.fanout");
+    public DirectExchange directExchange() {
+        return new DirectExchange("tut.direct");
     }
 }
 
@@ -33,9 +33,14 @@ class ReceiverConfig {
         return new AnonymousQueue();
     }
     @Bean
-    public Binding binding2(FanoutExchange fanout,
-                            Queue autoDeleteQueue2) {
-        return BindingBuilder.bind(autoDeleteQueue2).to(fanout);
+    public Binding binding2a(DirectExchange directExchange,
+                            Queue autoDeleteQueue2){
+        return BindingBuilder.bind(autoDeleteQueue2).to(directExchange).with("green");
+    }
+    @Bean
+    public Binding binding2b(DirectExchange directExchange,
+                             Queue autoDeleteQueue2){
+        return BindingBuilder.bind(autoDeleteQueue2).to(directExchange).with("black");
     }
 
     @Bean
@@ -43,8 +48,13 @@ class ReceiverConfig {
         return new AnonymousQueue();
     }
     @Bean
-    public Binding binding1(FanoutExchange fanout, Queue autoDeleteQueue1) {
-        return BindingBuilder.bind(autoDeleteQueue1).to(fanout);
+    public Binding binding1a(DirectExchange directExchange, Queue autoDeleteQueue1) {
+        return BindingBuilder.bind(autoDeleteQueue1).to(directExchange).with("orange");
+    }
+
+    @Bean
+    public Binding binding1b(DirectExchange directExchange, Queue autoDeleteQueue1) {
+        return BindingBuilder.bind(autoDeleteQueue1).to(directExchange).with("black");
     }
 
     @Bean

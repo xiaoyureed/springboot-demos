@@ -67,6 +67,7 @@ public class RPCClient implements AutoCloseable {
         return result;
     }
 
+    @Override
     public void close() throws IOException {
         connection.close();
     }

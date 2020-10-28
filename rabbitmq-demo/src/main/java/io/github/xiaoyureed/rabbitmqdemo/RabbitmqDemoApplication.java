@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Bean;
 /**
  * @author xiaoyu
  */
-//@SpringBootApplication(scanBasePackages = {"io.github.xiaoyureed.withspring.hello"})
-@SpringBootApplication(scanBasePackages = {"io.github.xiaoyureed.withspring.worker_queue"})
+@SpringBootApplication(scanBasePackages = {"io.github.xiaoyureed.withspring.routing"})
 public class RabbitmqDemoApplication {
 
     public static void main(String[] args) {
@@ -19,9 +18,9 @@ public class RabbitmqDemoApplication {
 
     @Bean
     public CommandLineRunner keepAlive(ConfigurableApplicationContext context) {
-        // keep the application alive for  ten seconds
+        // keep the application alive for  twenty seconds
         return args -> {
-            Thread.sleep(10 * 1000);
+            Thread.sleep(20 * 1000);
             context.close();
         };
     }

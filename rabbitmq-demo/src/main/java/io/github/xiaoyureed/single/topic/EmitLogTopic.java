@@ -1,5 +1,6 @@
 package io.github.xiaoyureed.single.topic;
 
+import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -19,16 +20,20 @@ public class EmitLogTopic {
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
 
-            channel.exchangeDeclare(EXCHANGE_NAME, "topic");// 和 direct 类似， 只是 routingKey 更加灵活
+            // 和 direct 类似， 只是 routingKey 更加灵活
+            channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC);
+//            channel.exchangeDeclare(EXCHANGE_NAME, "topic");
 
             Scanner scan = new Scanner(System.in);
             System.out.println("输入：");
             while (scan.hasNextLine()) {
                 String line = scan.nextLine();
-                int    indexOfSeparator    = line.indexOf(" ");
-                String routingKey = line.substring(0, indexOfSeparator);// routingKey必须由点分开
-                        // 【*】表示 一个单词(不是字符)
-                        // 【#】表示0个或多个单词
+                int indexOfSeparator = line.indexOf(" ");
+                // routingKey必须由点分开
+                // 【*】表示 一个单词(不是字符)
+                // 【#】表示0个或多个单词
+                String routingKey = line.substring(0, indexOfSeparator);
+
                 String message = line.substring(indexOfSeparator + 1);
 
                 channel.basicPublish(EXCHANGE_NAME, routingKey, null, message.getBytes("UTF-8"));

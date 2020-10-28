@@ -3,6 +3,7 @@ package io.github.xiaoyureed.single.rpc;
 import com.rabbitmq.client.*;
 
 /**
+ * 消费 client 发送过来的消息
  * @author xiaoyu
  * @since 1.0
  */
@@ -10,8 +11,12 @@ public class RPCServer {
     private static final String RPC_QUEUE_NAME = "rpc_queue";
 
     private static int fib(int n) {
-        if (n == 0) return 0;
-        if (n == 1) return 1;
+        if (n == 0) {
+            return 0;
+        }
+        if (n == 1) {
+            return 1;
+        }
         return fib(n - 1) + fib(n - 2);
     }
 
