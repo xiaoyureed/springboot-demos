@@ -2,57 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.5.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+    <modules>
+        <module>common</module>
+    </modules>
     <groupId>io.github.xiaoyureed</groupId>
     <artifactId>springboot-demos</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-
-    <!--<modules>-->
-        <!--<module>java8-demo</module>-->
-        <!--<module>rabbitmq-demo</module>-->
-        <!--<module>concurrent-java</module>-->
-        <!--<module>docker-compose-demo/app</module>-->
-        <!--<module>docker-demo</module>-->
-        <!--<module>groovy-demo</module>-->
-        <!--<module>h2-jpa-demo</module>-->
-        <!--<module>java-basic</module>-->
-        <!--<module>jetty</module>-->
-        <!--<module>mockito-mybatis-plus-demo</module>-->
-        <!--<module>redis/redis-demo</module>-->
-        <!--<module>servlet_3_0</module>-->
-        <!--<module>shiro-web-demo</module>-->
-        <!--<module>starter-demo/demo-spring-boot-starter</module>-->
-        <!--<module>starter-demo/demo-spring-boot-starter-test</module>-->
-        <!--<module>thymeleaf-demo</module>-->
-        <!--<module>weixin-login-demo</module>-->
-        <!--<module>zookeeper-demo</module>-->
-        <!--<module>spring-security-demo</module>-->
-        <!--<module>spring-security-mybatis-plus</module>-->
-        <!--<module>spring-security-mybatis-plus-token</module>-->
-        <!--<module>spring-boot-demo</module>-->
-    <!--<module>spring-security-oauth2/auth-server</module>-->
-        <!--<module>common</module>-->
-    <!--<module>spring-security-oauth2/password-pattern/password-demo</module>-->
-    <!--<module>mongo</module>-->
-    <!--<module>rw-separate-demo</module>-->
-    <!--<module>rw-separate-starter</module>-->
-    <!--<module>crawler</module>-->
-<!--    <module>schedule-demo</module>-->
-    <!--</modules>-->
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -79,7 +35,7 @@
             <dependency>
                 <groupId>io.github.xiaoyureed</groupId>
                 <artifactId>common</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>

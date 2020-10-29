@@ -1,0 +1,39 @@
+POST http://localhost:8080/api/emps
+Content-Type: application/json
+
+{
+  "name": "nn"
+}
+
+
+###
+
+###
+GET http://localhost:8080/api
+#{
+#  "_links": {
+#    "emps": {
+#      "href": "http://localhost:8080/api/emps"
+#    },
+#    "profile": {
+#      "href": "http://localhost:8080/api/profile"
+#    }
+#  }
+#}
+
+###
+GET http://localhost:8080/api/emps/2
+#{
+#  "name": "xy",
+#  "salary": 15000.00,
+#  "_links": {
+#    "self": {
+#      "href": "http://localhost:8080/api/emps/1"
+#    },
+#    "emp": {
+#      "href": "http://localhost:8080/api/emps/1"
+#    }
+#  }
+#}
+
+###
