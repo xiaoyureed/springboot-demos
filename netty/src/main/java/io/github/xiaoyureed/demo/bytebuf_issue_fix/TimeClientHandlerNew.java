@@ -1,4 +1,4 @@
-package io.github.xiaoyureed.concurrentjava.netty.demo.discard_server.bytebuf_issue_fix;
+package io.github.xiaoyureed.demo.bytebuf_issue_fix;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

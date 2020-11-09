@@ -1,4 +1,4 @@
-package io.github.xiaoyureed.concurrentjava.netty.demo.discard_server.use_pojo;
+package io.github.xiaoyureed.demo.use_pojo;
 
 import java.util.Date;
 

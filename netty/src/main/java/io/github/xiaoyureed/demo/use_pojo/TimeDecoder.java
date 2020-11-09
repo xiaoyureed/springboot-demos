@@ -1,4 +1,4 @@
-package io.github.xiaoyureed.concurrentjava.netty.demo.discard_server.bytebuf_issue_fix;
+package io.github.xiaoyureed.demo.use_pojo;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -7,6 +7,8 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
 
 /**
+ * ByteBuf to UnixTime
+ *
  * @author xiaoyu
  * @since 1.0
  */
@@ -26,6 +28,8 @@ public class TimeDecoder extends ByteToMessageDecoder { // (1)
         //- If decode() adds an object to out, it means the decoder decoded a message successfully
         //- you don't need to decode multiple messages. ByteToMessageDecoder will keep calling the decode() method
         // until it adds nothing to out.
-        out.add(in.readBytes(4)); // (4)
+
+        //out.add(in.readBytes(4)); // (4)
+        out.add(new UnixTime(in.readUnsignedInt()));
     }
 }
