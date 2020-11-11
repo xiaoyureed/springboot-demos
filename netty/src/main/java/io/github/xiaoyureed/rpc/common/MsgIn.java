@@ -26,7 +26,7 @@ public class MsgIn {
      */
     private String payload;
 
-    public <T> T parsePayload(Class<T> clazz) {
+    public <T> T getParsedPayload(Class<T> clazz) {
         return JsonUtils.toObj(payload, clazz);
     }
 }

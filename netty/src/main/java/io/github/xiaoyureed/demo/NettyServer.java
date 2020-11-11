@@ -82,13 +82,15 @@ public class NettyServer {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
                             ////add more handlers to the pipeline
+                            // 入站处理, 即这里的 DiscardServerHandler
+                            // 出站处理, 即 编码器, 这里没有发送信息, 省略了
                             ch.pipeline().addLast(new DiscardServerHandler());
                         }
                     })
                     // specify params for the Channel
                     // ref: https://netty.io/4.1/api/io/netty/channel/ChannelOption.html
                     //
-                    // childoptions:
+                    // child options:
                     //SO_RCVBUF Socket参数，TCP数据接收缓冲区大小。
                     //TCP_NODELAY TCP参数，立即发送数据，默认值为Ture。
                     //SO_KEEPALIVE Socket参数，连接保活，默认值为False。启用该功能时，TCP会主动探测空闲连接的有效性。
@@ -97,8 +99,7 @@ public class NettyServer {
                     //SO_BACKLOG Socket参数，服务端接受连接的队列长度，如果队列已满，客户端连接将被拒绝。默认值，Windows为200，其他为128。
                     //
                     //for the NioServerSocketChannel that accepts incoming connections.也就是boosGroup线程
-                    ////设置线程队列得到连接个数
-                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .option(ChannelOption.SO_BACKLOG, 128)// 服务端接受连接的队列长度
                     //for the Channels accepted by the parent ServerChannel,也就是workerGroup线程。
                     //设置保持活动连接状态
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
@@ -107,11 +108,13 @@ public class NettyServer {
             // bind() 可被调用多次绑定不同地址
             // netty 中的操作都是异步的, 这里 使用 sync() 进行同步等待
             ChannelFuture f = b.bind(port).sync(); // (7)
+            System.out.println(">>> server start ok");
 
             // Wait until the server socket is closed.
             // In this example, this does not happen, but you can do that to gracefully
             // shut down your server.
             f.channel().closeFuture().sync();
+            System.out.println(">>> server stop ok");
         } finally {
             // close event loop
             workerGroup.shutdownGracefully();
@@ -140,6 +143,202 @@ class DiscardServerHandler extends ChannelInboundHandlerAdapter {
         ctx.close();
     }
 
+    /**
+     * ByteBuf 是 netty 的数据容器, 是对 java nio 中 ByteBuffer 的替换
+     * ByteBuffer 劣势:
+     * - 长度不可调, 一旦buffer分配完成，它的容量不能动态扩展或者收缩，当需要编码的POJO对象大于ByteBuffer容量时，会发生索引越界异常
+     * - 只有一个标识位置的指针position。读写是需要手动flip和rewind等，需要十分小心使用这些API，否则很容易导致异常
+     *  ByteBuf 's advantages:
+     *  - 容量根据需求可扩展( 如同JDK的StringBuilder )
+     *  - 读和写使用不同的索引，即有两个索引, no need to use ByteBuffer的flip方法 来从写模式转换到读模式;
+     *
+     *
+     *
+     *
+     *  bytebuf 特点: (一个由不同的索引分别控制读访问和写访问的字节数组)
+     *
+     *  - readerIndex ≤ writeIndex (ByteBuf容量 = writerIndex。ByteBuf可读容量 = writerIndex - readerIndex), 尝试读取大于writeIndex位置的数据，将触发IndexOutOfBoundsException
+     *  - readXXX(), skipxxx()和writeXXX()方法将会推进其对应的索引readerIndex和writerIndex。自动推进
+     *  - getXXX()和setXXX()方法用于访问数据，对writerIndex和readerIndex无影响
+     *
+     *
+     *
+     * ByteBuf分配创建:
+     * 按需分配(ByteBufAllocator)、Unpooled缓冲区和ByteBufUtil类
+     *
+     *按需分配(ByteBufAllocator接口):
+     * 提供了两个实现：PooledByteBufAllocator (默认)和UnpooledByteBufAllocator。可以通过BootStrap中的Config为每个Channel提供独立的ByteBufAllocator实例
+     * 实现了(ByteBuf的)池化
+     * 1. ctx.channel().alloc().buffer() ----- 本质就是: ByteBufAllocator.DEFAULT
+     * 3. ByteBufAllocator.DEFAULT ----- 有两种类型: UnpooledByteBufAllocator.DEFAULT(非池化)和PooledByteBufAllocator.DEFAULT(池化)。
+     * 2. ByteBufAllocator.DEFAULT.buffer() ----- 返回一个基于堆或者直接内存存储的Bytebuf。默认是堆内存
+     * 对于Java程序，默认使用PooledByteBufAllocator(池化)。对于安卓，默认使用UnpooledByteBufAllocator(非池化)
+     *
+     * Unpooled帮助类: (非池化)
+     * 当你没有一个ByteBufAllocator引用时，Netty提供了一个可利用的类叫Unpooled，Unpooled提供了静态的帮助方法去创建一个非池的ByteBuf实例
+     * Unpooled类使ByteBuf能在在非网络项目中有效使用
+     *
+     * - buffer()方法，返回一个未池化的基于堆内存存储的ByteBuf
+     * - wrappedBuffer() ----- 创建一个视图，返回一个包装了给定数据的ByteBuf。非常实用
+     *
+     * ByteBufUtil类
+     * 1. hexdump() ----- 以十六进制的表示形式打印ByteBuf的内容。非常有价值
+     * 2. equals() ----- 判断两个ByteBuf实例的相等性
+     *
+     *
+     *
+     *
+     *  ByteBuf主要3种使用模式：①Heap Buffers —— 堆缓冲区；②Direct Buffers —— 直接缓冲区；③Composite Buffers —— 复合缓冲区
+     *
+     *  heap buffers: 将数据存放在JVM的堆空间
+     *  - advantage: 由于数据存储在Jvm堆中可以快速创建和快速释放，并且提供了数组直接快速访问的方法
+     *  - dis: 每次数据与I/O进行传输时，都需要将数据拷贝到直接缓冲区
+     *  这种模式被称为支撑数组 （backing array），它能在没有使用池化的情况下提供快速的分配和释放。非常适合于有遗留的数据需要处理的情况。
+     *
+             public static void heapBuffer() {
+                 // 创建Java堆缓冲区
+                 ByteBuf heapBuf = Unpooled.buffer();
+                 if (heapBuf.hasArray()) { // 是数组支撑
+                     byte[] array = heapBuf.array();
+                     int offset = heapBuf.arrayOffset() + heapBuf.readerIndex();
+                     int length = heapBuf.readableBytes();
+                     handleArray(array, offset, length);
+                 }
+             }
+
+     * direct buffers: 堆外分配的直接内存，不会占用堆的容量
+     * - 优点: 使用Socket传递数据时性能很好，避免了数据从Jvm堆内存拷贝到直接缓冲区的过程。提高了性能
+     * - 缺点: 相对于堆缓冲区而言，Direct Buffer分配内存空间和释放更为昂贵
+     * 对于涉及大量I/O的数据读写(如一些IO通信线程中读写缓冲时)，建议使用Direct Buffer。而对于用于后端的业务消息编解码模块建议使用Heap Buffer
+     *
+                public static void directBuffer() {
+                    ByteBuf directBuf = Unpooled.directBuffer();
+                    if (!directBuf.hasArray()) {
+                        int length = directBuf.readableBytes();
+                        byte[] array = new byte[length];
+                        directBuf.getBytes(directBuf.readerIndex(), array);
+                        handleArray(array, 0, length);
+                    }
+                 }
+
+     * Composite Buffer: 是Netty特有的缓冲区。本质上类似于提供一个或多个ByteBuf的组合视图，可以根据需要添加和删除不同类型的ByteBuf。
+     * - 不支持访问其支撑数组。因此如果要访问，需要先将内容拷贝到堆内存中，再进行访问
+
+             //组合缓冲区
+             CompositeByteBuf compBuf = Unpooled.compositeBuffer();
+             //堆缓冲区
+             ByteBuf heapBuf = Unpooled.buffer(8);
+             //直接缓冲区
+             ByteBuf directBuf = Unpooled.directBuffer(16);
+             //添加ByteBuf到CompositeByteBuf
+             compBuf.addComponents(heapBuf, directBuf);
+             //删除第一个ByteBuf
+             compBuf.removeComponent(0);
+             Iterator<ByteBuf> iter = compBuf.iterator();
+             while(iter.hasNext()){
+                 System.out.println(iter.next().toString());
+             }
+
+             //使用数组访问数据
+             if(!compBuf.hasArray()){
+                 int len = compBuf.readableBytes();
+                 byte[] arr = new byte[len];
+                 compBuf.getBytes(0, arr);
+             }
+    *
+     *
+     * 读写操作:
+     *
+     * getInt(int) 从给定索引处读取 int 值
+     * .....
+     *
+     *
+     * 判断操作:
+     *
+     * isReadable() 是否还有字节可读
+     * iswritable() 是否还有空间可写
+     * readablebytes() 返回所有可悲读取的字节数
+     * writablebytes() 返回可写字节数
+     * capacity()    返回容量字节数, 此后, 尝试扩容  直到达到 maxcapacity()
+     maxcapacity()   可容纳最大字节数    *
+     hasArray()     bytebuf 是否由一个字节数组支撑 (堆缓冲区模式)
+     array()       若 bytebuf 由一个字节数组支撑, 返回这个数组, 否则异常
+     *
+
+     * 字节操作:
+     *
+     * 随机遍历字节
+     public static void byteBufRelativeAccess() {
+         ByteBuf buffer = Unpooled.buffer(); //get reference form somewhere
+         for (int i = 0; i < buffer.capacity(); i++) {
+             byte b = buffer.getByte(i);// 不改变readerIndex值
+             System.out.println((char) b);
+         }
+     }
+
+     * 顺序访问索引
+     * ByteBuf被读索引和写索引划分成3个区域：
+     * 可丢弃字节区域: [0，readerIndex), discardReadBytes()方法丢弃已经读过的字节, 将可读字节区域(CONTENT)往前移动readerIndex位，同时修改读索引和写索引。如果频繁调用，会有多次数据复制开销，对性能有一定的影响
+     * 可读字节区域: [readerIndex, writerIndex)
+     * 可写字节区域: [writerIndex, capacity)之间的区域
+     *
+     *
+     *
+     *
+     *
+     * 索引管理
+     *
+     * - markReaderIndex()+resetReaderIndex() : markReaderIndex()是标记当前的readerIndex，resetReaderIndex()则是恢复到刚刚标记的readerIndex。常用于dump ByteBuf的内容，又不想影响原来ByteBuf的readerIndex的值
+     * - readerIndex(int) , writerIndex(int) 设置读写索引为指定值
+     * - clear()效果是: readerIndex=0, writerIndex=0。不会清除内存; 调用clear()比调用discardReadBytes()轻量的多。仅仅重置readerIndex和writerIndex的值，不会拷贝任何内存，开销较小
+     *
+     * 查找操作
+     *
+     *     // 使用indexOf()方法来查找
+     *     buffer.indexOf(buffer.readerIndex(), buffer.writerIndex(), (byte)8);
+     *     // 使用ByteProcessor查找给定的值
+     *     int index = buffer.forEachByte(ByteProcessor.FIND_CR);
+     *
+     *
+     *
+     * 复制拷贝
+     * 如果需要拷贝现有缓冲区的真实副本，请使用copy()或copy(int, int)方法
+     *
+     * 派生缓冲区 ----- 视图
+     *视图不做任何拷贝操作, 都会返回一个新的ByteBuf实例，具有自己的读索引和写索引。但是，其内部存储是与原对象是共享的
+     * 若修改视图实例, 对应的源实例也会被修改
+     *
+     * 1. duplicate()
+     *
+     * 2. slice()
+     *
+     * 3. slice(int, int)
+     *
+     * 4. Unpooled.unmodifiableBuffer(...)
+     *
+     * 5. Unpooled.wrappedBuffer(...)
+     *
+     * 6. order(ByteOrder)
+     *
+     * 7. readSlice(int)
+     *
+     *
+     *
+     *
+     * 引用计数:
+     * 1. 谁负责释放: 一般来说，是由最后访问(引用计数)对象的那一方来负责将它释放
+     * 2. buffer.release() ----- 引用计数减1
+     * 3. buffer.retain() ----- 引用计数加1
+     * 4. buffer.refCnt() ----- 返回当前对象引用计数值
+     * 5. buffer.touch() ----- 记录当前对象的访问位置，主要用于调试。
+     * 6. ByteBuf的三种模式: 堆缓冲区(heap Buffer)、直接缓冲区(dirrect Buffer)和复合缓冲区(Composite Buffer)都使用了引用计数
+     * 7. 如果使用了Netty的ByteBuf，建议功能测试时，打开内存检测: -Dio.netty.leakDetectionLevel=paranoid
+     *
+     *
+     * ByteBufHolder
+     * 是ByteBuf的容器, 默认实现: DefaultByteBufHolder
+     * 为Netty的高级特性提供了支持，如缓冲区池化，可以从池中借用ByteBuf，并且在需要时自动释放
+     */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
@@ -150,6 +349,8 @@ class DiscardServerHandler extends ChannelInboundHandlerAdapter {
             }
 //              System.out.println(in.toString(io.netty.util.CharsetUtil.US_ASCII));
         } finally {
+            // 当有写操作时，不需要手动释放msg的引用
+            // 当只有读操作时，才需要手动释放msg的引用
             ReferenceCountUtil.release(msg);
         }
 

@@ -24,7 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 public class RpcServer {
     private final String ip;
     private final int port;
+    /**
+     * the number of threads used to process io stream
+     */
     private final int ioThreads;
+    /**
+     * the num of threads processing business
+     */
     private final int bizThreads;
 
     private final HandlerRegistry handlers;
@@ -73,12 +79,14 @@ public class RpcServer {
                     .option(ChannelOption.TCP_NODELAY, true)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture f = boot.bind(ip, port).sync();
+            // 关闭服务端 channel
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
+            // 关闭处理io连接的线程池
             eventExecutors.shutdownGracefully();
-            // stop our own thread group
+            // stop our own biz thread group
             msgRealHandler.closeGracefully();
         }
 

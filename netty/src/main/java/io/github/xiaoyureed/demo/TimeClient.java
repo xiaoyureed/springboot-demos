@@ -51,9 +51,11 @@ public class TimeClient {
             // call the connect() method instead of the bind()
             ChannelFuture f = bootstrap.connect(ip, port).sync();
             //ChannelFuture connect = channelFuture.channel().connect(new InetSocketAddress("127.0.0.1", 6666));//一般使用启动器，这种方式不常用
+            System.out.println(">>> client start ok");
 
             // Wait until the connection is closed.
             f.channel().closeFuture().sync();
+            System.out.println(">>> client stop ok");
         } finally {
             workerGroup.shutdownGracefully();
         }

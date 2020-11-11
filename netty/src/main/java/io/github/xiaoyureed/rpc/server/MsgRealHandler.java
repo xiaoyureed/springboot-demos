@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public class MsgRealHandler extends ChannelInboundHandlerAdapter {
-    private ThreadPoolExecutor executor;
-    private MsgRegistry msgs;
-    private HandlerRegistry handlers;
+    private final ThreadPoolExecutor executor;
+    private final MsgRegistry msgs;
+    private final HandlerRegistry handlers;
 
     public MsgRealHandler(MsgRegistry msgs,
                           HandlerRegistry handlers, int coreSize) {
@@ -36,6 +36,7 @@ public class MsgRealHandler extends ChannelInboundHandlerAdapter {
             }
 
         };
+        // 闲置时间超过30秒的线程自动销毁
         this.executor = new ThreadPoolExecutor(1, coreSize,
                 30, TimeUnit.SECONDS, queue, factory,
                 new ThreadPoolExecutor.CallerRunsPolicy());
@@ -45,31 +46,35 @@ public class MsgRealHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.debug("connection comes");
+        log.debug(">>> connection comes");
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.debug("connection leaves");
+        log.debug(">>> connection leaves");
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        log.debug(">>> channel read, begin processing...");
         if (msg instanceof MsgIn) {
             this.executor.execute(() -> {
                 this.handleMessage(ctx, (MsgIn) msg);
             });
+        } else {
+            log.warn(">>> msg type error, should be {}, but get {}",
+                    MsgIn.class.getName(), msg.getClass().getName());
         }
     }
 
     private void handleMessage(ChannelHandlerContext ctx, MsgIn input) {
-        // 业务逻辑在这里
         Class<?> clazz = msgs.get(input.getType());
+        // // 没注册的消息用默认的处理器处理
         if (clazz == null) {
             handlers.defaultHandler().handle(ctx, input.getRequestId(), input);
             return;
         }
-        Object o = input.parsePayload(clazz);
+        Object o = input.getParsedPayload(clazz);
         IMsgHandler<Object> handler = (IMsgHandler<Object>) handlers.get(input.getType());
         if (handler != null) {
             handler.handle(ctx, input.getRequestId(), o);
@@ -80,16 +85,21 @@ public class MsgRealHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.warn("connection error", cause);
+        log.error(">>> connection error", cause);
+        cause.printStackTrace();
+//        ctx.close();
     }
 
     public void closeGracefully() {
+        // 先通知关闭
         this.executor.shutdown();
+        // 等待 10s
         try {
             this.executor.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        // 强制关闭
         this.executor.shutdownNow();
     }
 }
