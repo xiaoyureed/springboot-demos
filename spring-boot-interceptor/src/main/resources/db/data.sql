@@ -1,0 +1,1 @@
+insert into account(name, pwd) values ('ab', '123')

@@ -5,12 +5,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +21,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -37,15 +40,14 @@ public class SpringSecurityDemoApp {
 }
 
 @Configuration
-class MvcConfig extends WebMvcConfigurationSupport {
-
+class WebMvcConfig implements WebMvcConfigurer {
     /**
      * 添加 view controller
      * <p>
      * 将 url path 和 template 对应, 无需添加任何的 controller 代码
      */
     @Override
-    protected void addViewControllers(ViewControllerRegistry registry) {
+    public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/home").setViewName("home");
         registry.addViewController("/").setViewName("home");
         registry.addViewController("/hello").setViewName("hello");
@@ -54,12 +56,11 @@ class MvcConfig extends WebMvcConfigurationSupport {
     }
 }
 
-@Configuration
-// @EnableWebSecurity // 启用Spring Security的Web安全支持, spring boot 自动配置已经加了
-class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+@Configuration
+// 启用Spring Security的Web安全支持, spring boot 自动配置已经加了
+// @EnableWebSecurity
+class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * Spring Security 中提供了 BCryptPasswordEncoder 密码编码工具，
@@ -71,6 +72,9 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * WebSecurity 是 HTTPSecurity 超集
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // 默认配置为
@@ -78,20 +82,22 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()// 开启登录配置
                 // 任何符合的path不需要验证, 放行
-                .antMatchers("/", "/home").permitAll()  // denyAll 拦截所有
-
-                // 也支持通配符
-                // .antMatchers("/product/**").hasRole("USER")
+                .antMatchers("/", "/home").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                // denyAll 拦截所有
+//                .antMatchers("...").denyAll()
 
                 // 请求发送的IP匹配时返回true
+                // 也支持通配符
                 // .antMatchers("/product/**").hasIpAddress('192.168.1.0/24'))
 
                 // admin-page 需要访问者 有 admin role   // 还有 hasAnyRole("", ""...)
                 // 角色名默认会带有 "ROLE_"前缀
-                .antMatchers("/admin-page").hasRole("ADMIN")
                 // .hasAuthority([authority])  等同于hasRole,但不会带有ROLE_前缀
+                .antMatchers("/admin-page").hasRole("ADMIN")
 
-                .anyRequest().authenticated() // 剩余的其他 api 需要验证
+//                .antMatchers("/api/**").authenticated() //    /api/** 下的需要验证
+                .anyRequest().authenticated() // 剩余的其他 api 需要验证才能访问
 
                 // 当前用户既不是anonymous也不是rememberMe用户时返回true
                 //fullAuthenticated()
@@ -99,33 +105,35 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
                 // 开启表单登录验证
+                //自带表单页面
                 .formLogin()
-
                 // 自定义验证表单页面, 拦截得到需要验证的请求, 跳转到这个 api
                 .loginPage("/login")
+                //自定义登录处理接口
+                // .loginProcessingUrl("/doLogin")
 
                 // 登录失败跳转地址
                 // .failureUrl( "/login-error" )
                 // 成功跳转地址
                 // .successForwardUrl("")
 
-                //自定义登录处理接口
-                // .loginProcessingUrl("/doLogin")
-
                 //定义登录时，用户名的 key，默认为 username
                 // .usernameParameter("uname")
                 //定义登录时，用户密码的 key，默认为 password
                 // .passwordParameter("passwd")
 
+                // 不需要session（不创建会话）
+//                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
                 //登录成功的处理器
                 // .successHandler(new AuthenticationSuccessHandler() {
                 //     @Override
                 //     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
+                //          //若是前后分离的项目, 返回 json 即可
                 //         resp.setContentType("application/json;charset=utf-8");
                 //         PrintWriter out = resp.getWriter();
                 //         out.write("success");
                 //         out.flush();
-                //    若是前后分离的项目, 返回 json 即可
                 //     }
                 // })
 
@@ -139,7 +147,6 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //         out.flush();
                 //     }
                 // })
-
                 // 和表单登录相关的接口统统都直接通过放行
                 .permitAll()
 
@@ -167,9 +174,9 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
 
-                // 拒绝后跳转页面
+                //
+                // 权限拒绝后跳转页面
                 // .exceptionHandling().accessDeniedPage( "/401" )
-
                 // 如果希望拒绝后返回json
                 .exceptionHandling().accessDeniedHandler(new AccessDeniedHandler() {
                     @Override
@@ -179,8 +186,8 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         httpServletResponse.getWriter().write(e.getMessage());
                     }
                 });
-                // 异常处理也可以这样做
-                // .authenticationEntryPoint(new AuthenticationEntryPoint() {
+                // 异常处理
+                // .exceptionHandling().authenticationEntryPoint(new AuthenticationEntryPoint() {
                 //     @Override
                 //     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
                 //         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
@@ -188,11 +195,17 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // });
 
                 // .and()
-                // 若不自定义验证接口, 需要打开 httpBasic, 默认就是
+                // 若不自定义验证接口, 需要打开 httpBasic,
                 // .httpBasic()
+
+                // 允许跨域
+                // .and().cors()
                 // .and()
-                // 关闭 跨域支持
+                // 禁止跨站请求伪造
                 // .csrf().disable();
+
+        // 防止H2 web 页面的Frame 被拦截
+        http.headers().frameOptions().disable();
 
 
 
@@ -214,10 +227,10 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth
                 .inMemoryAuthentication()
                 // Spring security 5.0中新增了多种加密方式，强制要求加密
-                .passwordEncoder(passwordEncoder)
-                .withUser("user").password(passwordEncoder.encode("user")).roles("USER")
+                .passwordEncoder(bCryptPasswordEncoder())
+                .withUser("user").password(bCryptPasswordEncoder().encode("user")).roles("USER")
                 .and()
-                .withUser("root").password(passwordEncoder.encode("root")).roles("ADMIN", "USER");
+                .withUser("root").password(bCryptPasswordEncoder().encode("root")).roles("ADMIN", "USER");
 
         //使用 数据库 需要注入userDetailsService的实现类
         // auth.userDetailsService(userService).passwordEncoder(new BCryptPasswordEncoder());

@@ -42,43 +42,10 @@
             <version>2.11.1</version>
         </dependency>
 
-        <!--mina-->
-        <!-- https://mvnrepository.com/artifact/org.apache.mina/mina-core -->
         <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-core</artifactId>
-            <version>2.0.19</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!--netty-->
-        <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.42.Final</version>
-        </dependency>
-
-        <!--tuscany (sca 标准 的实现框架)-->
-        <!-- https://mvnrepository.com/artifact/org.apache.tuscany.sca/tuscany-sca-api -->
-        <dependency>
-            <groupId>org.apache.tuscany.sca</groupId>
-            <artifactId>tuscany-sca-api</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-
-
-        <!--mule (实现 esb 风格的 soa平台)-->
-        <!-- https://mvnrepository.com/artifact/org.mule/mule-core -->
-        <dependency>
-            <groupId>org.mule</groupId>
-            <artifactId>mule-core</artifactId>
-            <version>3.9.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

@@ -10,6 +10,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 public class HeartbeatClient {
     @Value("${netty.server.port:9999}")
     private int serverPort;
-    @Value("${netty.server.host:localhost}")
+    @Value("${netty.server.host:127.0.0.1}")
     private String serverHost;
 
     private final NioEventLoopGroup group = new NioEventLoopGroup();
@@ -54,7 +55,11 @@ public class HeartbeatClient {
                                 new SimpleChannelInboundHandler<ByteBuf>() {
                                     @Override
                                     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
-                                        log.info(">>> client: receive heartbeat {}", byteBuf.toString(StandardCharsets.UTF_8));
+                                        try {
+                                            log.info(">>> client: receive heartbeat {}", byteBuf.toString(StandardCharsets.UTF_8));
+                                        } finally {
+                                            ReferenceCountUtil.release(byteBuf);
+                                        }
                                     }
 
                                     /**

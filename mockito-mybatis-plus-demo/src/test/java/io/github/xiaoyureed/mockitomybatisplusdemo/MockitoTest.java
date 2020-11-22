@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 public class MockitoTest {
     @Test
     public void testMockito() {
-        List mockList = mock(List.class);
+        List<String> mockList = mock(List.class);
         mockList.add("hello"); // add() is not been called actually
         log.info(">>> mockList: {}", mockList);
         mockList.clear();

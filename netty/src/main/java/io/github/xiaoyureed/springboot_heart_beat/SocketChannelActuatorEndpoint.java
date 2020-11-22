@@ -2,9 +2,7 @@ package io.github.xiaoyureed.springboot_heart_beat;
 
 import io.github.xiaoyureed.springboot_heart_beat.server.SocketChannelHolder;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.context.annotation.Profile;
 
 import java.util.Map;
 
@@ -13,8 +11,8 @@ import java.util.Map;
  * @since : 2020/11/11
  */
 //@Component
-@Profile("server")
-@Endpoint(id = "channel_map")
+//@Profile("server")
+//@Endpoint(id = "channel_map")
 public class SocketChannelActuatorEndpoint{
 
     @ReadOperation

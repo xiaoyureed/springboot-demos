@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.xiaoyureed.springbootdemos.common.util.CollectionUtils;
 import io.github.xiaoyureed.springbootdemos.common.util.StringUtils;
+import io.github.xiaoyureed.springsecuritymybatisplustoken.security.util.JwtUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -59,6 +60,8 @@ import java.time.ZoneId;
 import java.util.*;
 
 /**
+ * https://sourcegraph.com/github.com/Snailclimb/spring-security-jwt-guide@master/-/tree/src/main/java
+ *
  * @author xiaoyu
  * date: 2020/3/21
  */
@@ -374,52 +377,6 @@ class TokenProviderJavaJwtImpl implements ITokenProvider {
         return true;
     }
 
-}
-
-@Slf4j
-final class JwtUtils {
-
-    private static final String CLAIM_KEY_USERNAME = "username";
-
-    public static String createJwtToken(String username, Date expiresAt, String jwtSecret) {
-        // 构造 jwt header
-        HashMap<String, Object> jwtHeader = new HashMap<>(2);
-        jwtHeader.put("alg", "HS256");
-        jwtHeader.put("typ", "JWT");
-
-        return JWT.create()
-                .withHeader(jwtHeader) // header
-                // payload
-                .withClaim(CLAIM_KEY_USERNAME, username)
-                // 签名时间
-                .withIssuedAt(Date.from(LocalDateTime.now().atZone(
-                        ZoneId.systemDefault()).toInstant()))
-                // token 过期时间
-                .withExpiresAt(expiresAt)
-                // signature
-                .sign(Algorithm.HMAC256(jwtSecret));
-
-    }
-
-    public static Map<String, Claim> resolveClaims(String token, String jwtSecret) {
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(jwtSecret)).build();
-        try {
-            DecodedJWT decodedJWT = jwtVerifier.verify(token);
-            return decodedJWT.getClaims();
-        } catch (Exception e) {
-            log.error(">>> error of resolve token");
-            return null;
-        }
-    }
-
-    public static String resolveUsername(String token, String jwtSecret, String jwtClaimKeyUsername) {
-        Map<String, Claim> claims = resolveClaims(token, jwtSecret);
-        if (claims == null) {
-            log.error(">>> error of resolve token");
-            return "";
-        }
-        return claims.get(CLAIM_KEY_USERNAME).asString();
-    }
 }
 
 @Data

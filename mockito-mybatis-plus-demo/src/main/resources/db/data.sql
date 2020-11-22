@@ -1,5 +1,4 @@
-DELETE FROM user;
-
+delete from user;
 INSERT INTO user (id, name, pwd, age, email) VALUES
 (1, 'Jone', 'abc', 18, 'test1@baomidou.com'),
 (2, 'Jack', 'abd', 20, 'test2@baomidou.com'),
