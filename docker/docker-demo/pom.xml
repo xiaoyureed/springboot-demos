@@ -15,13 +15,19 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <docker.image.prefix>springboot</docker.image.prefix>
+        <docker.image.prefix>docker</docker.image.prefix>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

@@ -4,7 +4,7 @@
 spring:
   datasource:
     # http://localhost:8080/console
-    # jdbc:h2:file:c:/h2/example-app
+    # jdbc:h2:file:~/.h2/DBName;AUTO_SERVER=TRUE
     url: jdbc:h2:mem:example-app;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     platform: h2
     username: sa

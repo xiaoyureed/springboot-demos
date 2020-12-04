@@ -1,0 +1,1 @@
+insert into `demo`(`name`, `salary`) values ('xiao', 20000.0);
