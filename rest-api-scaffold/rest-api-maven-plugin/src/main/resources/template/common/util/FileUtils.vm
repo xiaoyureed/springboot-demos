@@ -1,0 +1,101 @@
+package ${packageName}.common.util;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public final class FileUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
+
+    private FileUtils() {
+    }
+
+    /**
+     * build system path according to classpath
+     *
+     * @param classpath classpath
+     * @return system path
+     */
+    public static String getSystemPathFromClasspath(String classpath) {
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("./" + classpath);
+        if (resource == null) {
+            log.error(">>> Error of building system path from classpath, classpath = {}", classpath);
+            throw new RuntimeException(">>> Error of build system path from classpath");
+        }
+        return resource.getPath();
+    }
+
+    /**
+     * build classpath according to system path
+     *
+     * @param systemPath system path
+     * @return classpath
+     */
+    public static String getClasspathFromSystemPath(String systemPath) {
+        return systemPath.substring(getSystemPathFromClasspath(".").length() - 1, systemPath.length() - 1);
+    }
+
+    /**
+     * list file paths of the specific directory
+     *
+     * @param file   dir
+     * @param result container
+     * @return path list
+     */
+    public static List<String> listFileAbsolutePath(File file, List<String> result) {
+        File[] files = file.listFiles();
+        if (files == null) {
+            log.error(">>> no file found in path '{}' ", file.getPath());
+            throw new RuntimeException(">>> Error of listFileAbsolutePath");
+        }
+        for (File f : files) {
+            if (f.isDirectory()) {
+                listFileAbsolutePath(f, result);
+            } else {
+                String absolutePath = f.getAbsolutePath();
+                result.add(absolutePath);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * scan mappers
+     * @param dir mapper directory, eg: classpath:mapper
+     * @return
+     */
+    public static Resource[] scanMappers(String dir) {
+        String[] split      = dir.split(":");// eg: ["classpath", "mapper"]
+        String absolutePath = getSystemPathFromClasspath(split[1]);
+        File   dirFile      = new File(absolutePath);
+
+        if (!dirFile.exists()) {
+            throw new RuntimeException(">>> mapper directory doesn't exist");
+        }
+        if (!dirFile.isDirectory()) {
+            throw new RuntimeException(">>> mapper directory cannot be a file");
+        }
+
+        ArrayList<Resource> result = new ArrayList<>();
+        List<String>        paths  = FileUtils.listFileAbsolutePath(dirFile, new ArrayList<>());
+        for (String s : paths) {
+            FileSystemResource fileSystemResource = new FileSystemResource(s);
+            result.add(fileSystemResource);
+            log.info(">>> scan Mapper: [{}]", fileSystemResource.getFilename());
+        }
+
+        return result.toArray(new Resource[0]);
+
+    }
+}

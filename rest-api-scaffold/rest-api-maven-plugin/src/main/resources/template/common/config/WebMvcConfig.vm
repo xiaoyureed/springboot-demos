@@ -1,0 +1,74 @@
+package ${packageName}.common.config;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import ${packageName}.common.interceptor.PagingInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+
+import java.text.SimpleDateFormat;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+@Configuration
+public class WebMvcConfig extends WebMvcConfigurationSupport {
+
+    private static final Logger log = LoggerFactory.getLogger(WebMvcConfig.class);
+
+    @Override
+    protected void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")// mapping path
+                .allowCredentials(true)// allow send cookie
+                .allowedHeaders("*")// allow all headers
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedOrigins("*");
+//                .exposedHeaders("")
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
+    }
+
+    @Bean
+    public MappingJackson2JsonView jsonView(ObjectMapper objectMapper) {
+        MappingJackson2JsonView jsonView = new MappingJackson2JsonView();
+        jsonView.setContentType("application/json;charset=UTF-8");
+        jsonView.setObjectMapper(objectMapper);
+        return jsonView;
+    }
+
+    @Override
+    protected void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new PagingInterceptor()).addPathPatterns("/api/**").excludePathPatterns("/api/authentication");
+        log.info(">>> add interceptor: PagingInterceptor - /api/**, exclude /api/authentication, ");
+
+
+    }
+
+
+    //    @Bean
+//    public FilterRegistrationBean<PagingFilter> filterRegistrationBean() {
+//        FilterRegistrationBean<PagingFilter> registrationBean = new FilterRegistrationBean<>();
+//        registrationBean.setFilter(new PagingFilter());
+//        registrationBean.setUrlPatterns(Collections.singletonList("/*"));
+//        registrationBean.setName("pagingFilter");
+//        registrationBean.setOrder(1);
+//        return registrationBean;
+//    }
+}

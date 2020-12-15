@@ -1,0 +1,62 @@
+package ${packageName}.common;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public class ThreadLocalContext {
+
+    private static final Logger log = LoggerFactory.getLogger(ThreadLocalContext.class);
+
+    private static ThreadLocal<Map<String, Object>> context = new ThreadLocal<>();
+
+    /**
+     * 保存
+     * @param key key
+     * @param value value
+     */
+    public static void set(String key, Object value) {
+        Map<String, Object> map = context.get();
+        if (map == null) {
+            map = new HashMap<>();
+            context.set(map);
+        }
+        map.put(key, value);
+
+    }
+
+    /**
+     * 获取
+     * @param key key
+     * @param type target type
+     * @param <T>
+     * @return
+     */
+    public static <T> T get(String key, Class<T> type) {
+        Map<String, Object> map = context.get();
+        if (map == null) {
+            log.warn(">>> ThreadLocalContext uninitialized, cannot get key '{}'", key);
+            return null;
+        }
+        Object valueRaw = map.get(key);
+        if (valueRaw == null) {
+            return null;
+        }
+        return type.cast(valueRaw);
+    }
+
+    /**
+     * 清理
+     */
+    public static void clear() {
+        context.remove();
+    }
+
+
+}

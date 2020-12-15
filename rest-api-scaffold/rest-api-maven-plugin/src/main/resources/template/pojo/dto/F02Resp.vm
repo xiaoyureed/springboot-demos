@@ -1,0 +1,16 @@
+package ${packageName}.pojo.dto;
+
+import ${packageName}.common.BaseResp;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+* Response DTO for [${domain}] delete
+*
+* @author CODE-GENERATOR
+* @since ${now}
+*/
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ${domainWithUppercase}F02RespM01 extends BaseResp {
+}

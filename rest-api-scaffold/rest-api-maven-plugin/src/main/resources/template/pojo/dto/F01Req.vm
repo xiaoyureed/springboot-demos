@@ -1,0 +1,17 @@
+package ${packageName}.pojo.dto;
+
+#foreach(${fullTypeName} in ${fullTypeNames})
+import ${fullTypeName};
+#end
+
+/**
+* Request DTO for [${domain}] create.
+*
+* @author CODE-GENERATOR
+* @since ${now}
+*/
+public class ${domainWithUppercase}F01ReqM01 {
+#foreach(${key} in ${columnTypeMap.keySet()})
+    private ${columnTypeMap.get(${key})} ${key};
+#end
+}

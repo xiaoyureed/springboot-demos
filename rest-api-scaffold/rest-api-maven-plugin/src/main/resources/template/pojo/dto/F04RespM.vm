@@ -1,0 +1,19 @@
+package ${packageName}.pojo.dto;
+
+import ${packageName}.common.BaseResp;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.util.List;
+
+/**
+* Response main DTO for [${domain}] query
+*
+* @author CODE-GENERATOR
+* @since ${now}
+*/
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ${domainWithUppercase}F04RespM01 extends BaseResp {
+    private List<${domainWithUppercase}F04RespS01> data;
+}

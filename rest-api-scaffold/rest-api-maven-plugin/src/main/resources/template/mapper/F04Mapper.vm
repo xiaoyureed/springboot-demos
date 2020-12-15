@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="${domainWithUppercase}">
+
+    <select id="${domain}F04" parameterType="${packageName}.sql.dto.${domainWithUppercase}F04InputM01"
+            resultType="${packageName}.sql.dto.${domainWithUppercase}F04OutputM01">
+        SELECT
+        id,
+        <trim suffixOverrides=",">
+            #foreach(${column} in ${columnFieldMap.keySet()})
+            ${column},
+            #end
+        </trim>
+        FROM ${table}
+        <where>
+            (is_del = '0' OR is_del = '' )
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            #foreach(${column} in ${columnFieldMap.keySet()})
+            <if test="${columnFieldMap.get(${column})} != null">
+                AND ${column} = #{${columnFieldMap.get(${column})}}
+            </if>
+            #end
+        </where>
+    </select>
+
+
+</mapper>

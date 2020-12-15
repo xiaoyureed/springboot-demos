@@ -1,0 +1,19 @@
+package ${packageName}.sql.dto;
+
+import lombok.Data;
+
+#foreach(${fullTypeName} in ${fullTypeNames})
+import ${fullTypeName};
+#end
+/**
+* Sql input DTO for [${domain}] update.
+*
+* @author CODE-GENERATOR
+* @since ${now}
+*/
+@Data
+public class ${domainWithUppercase}F03InputM01 {
+#foreach(${key} in ${columnTypeMap.keySet()})
+    private ${columnTypeMap.get(${key})} ${key};
+#end
+}

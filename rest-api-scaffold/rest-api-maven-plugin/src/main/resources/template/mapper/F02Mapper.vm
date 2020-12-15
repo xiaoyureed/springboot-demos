@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="${domainWithUppercase}">
+
+    <update id="${domain}F02" parameterType="${packageName}.sql.dto.${domainWithUppercase}F02InputM01">
+        UPDATE ${table} SET
+            is_del = '1'
+        WHERE
+            id = #{id}
+    </update>
+
+</mapper>

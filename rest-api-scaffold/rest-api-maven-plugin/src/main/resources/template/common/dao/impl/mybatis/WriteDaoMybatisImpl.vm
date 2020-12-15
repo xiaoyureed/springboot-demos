@@ -1,0 +1,36 @@
+package ${packageName}.common.dao.impl.mybatis;
+
+import ${packageName}.common.dao.WriteDao;
+import org.apache.ibatis.session.SqlSession;
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StopWatch;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public class WriteDaoMybatisImpl extends SqlSessionDaoSupport implements WriteDao {
+
+    private static final Logger log = LoggerFactory.getLogger(WriteDaoMybatisImpl.class);
+
+    public int write(String sqlId, Object params) throws Exception {
+        log.info(">>> write, sqlId = {}, params = {}", sqlId, params);
+        SqlSession session = this.getSqlSession();
+
+        StopWatch watch = new StopWatch(sqlId);
+        watch.start();
+        int rows;
+        try {
+            rows = session.update(sqlId, params);
+        } catch (Exception e) {
+            log.error(">>> Error of update, sql id = {}", sqlId);
+            e.printStackTrace();
+            throw e;
+        }
+        watch.stop();
+        log.info(">>> write, time = {} ms", watch.getTotalTimeMillis());
+        return rows;
+    }
+}

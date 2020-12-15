@@ -1,0 +1,54 @@
+package ${packageName}.common.aop;
+
+import ${packageName}.common.BaseResp;
+import ${packageName}.common.exception.BizException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity<BaseResp> handleValidationException(MethodArgumentNotValidException exception) {
+        BindingResult    bindingResult = exception.getBindingResult();
+        List<FieldError> fieldErrors   = bindingResult.getFieldErrors();
+
+        BaseResp baseResp = new BaseResp();
+        baseResp.setCode(1);
+        StringBuffer stringBuffer = new StringBuffer("Error of validation: ");
+        fieldErrors.forEach(each -> stringBuffer.append(each.getDefaultMessage()).append(", "));
+        baseResp.setMsg(stringBuffer.toString());
+
+        return new ResponseEntity<>(baseResp, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(BizException.class)
+    public ResponseEntity<BaseResp> handleBizException(BizException exception) {
+        BaseResp baseResp = new BaseResp();
+        baseResp.setCode(1);
+        baseResp.setMsg(exception.getMessage());
+
+        return new ResponseEntity<>(baseResp, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BaseResp> allUnknowExceptionHandler(HttpServletRequest request, Exception exception) {
+        BaseResp baseResp = new BaseResp();
+        baseResp.setCode(1);
+        baseResp.setMsg(exception.toString());
+
+        return new ResponseEntity<>(baseResp, HttpStatus.OK);
+    }
+}

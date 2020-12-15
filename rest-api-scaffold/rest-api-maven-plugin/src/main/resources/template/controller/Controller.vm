@@ -1,0 +1,94 @@
+package ${packageName}.controller;
+
+import ${packageName}.common.Service;
+import ${packageName}.pojo.dto.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * [${domain}] resources
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+@RestController
+@RequestMapping("/api")
+public class ${domainWithUppercase}Controller {
+
+    @Autowired
+    private Service<${domainWithUppercase}F01ReqM01, ${domainWithUppercase}F01RespM01> ${domain}F01;
+
+    @Autowired
+    private Service<${domainWithUppercase}F02ReqM01, ${domainWithUppercase}F02RespM01> ${domain}F02;
+
+    @Autowired
+    private Service<${domainWithUppercase}F03ReqM01, ${domainWithUppercase}F03RespM01> ${domain}F03;
+
+    @Autowired
+    private Service<${domainWithUppercase}F04ReqM01, ${domainWithUppercase}F04RespM01> ${domain}F04;
+
+    /**
+     * create - POST
+     * @param ${domain}F01ReqM01 request parameters
+     * @return response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/${domain}", method = {RequestMethod.POST})
+    public ResponseEntity<${domainWithUppercase}F01RespM01> create${domainWithUppercase}(@Validated @RequestBody ${domainWithUppercase}F01ReqM01 ${domain}F01ReqM01) throws Exception {
+        ${domainWithUppercase}F01RespM01 result = ${domain}F01.exec(${domain}F01ReqM01);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * delete - DELETE
+     * @param ${domain}F02ReqM01 request parameters
+     * @return response
+     * @throws Exception
+     */
+    @RequestMapping(value = "${domain}", method = {RequestMethod.DELETE})
+    public ResponseEntity<${domainWithUppercase}F02RespM01> delete${domainWithUppercase}(@Validated @RequestBody ${domainWithUppercase}F02ReqM01 ${domain}F02ReqM01) throws Exception {
+        ${domainWithUppercase}F02RespM01 result = ${domain}F02.exec(${domain}F02ReqM01);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * update - PUT
+     * @param ${domain}F03ReqM01 request parameters
+     * @return response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/${domain}", method = {RequestMethod.PUT})
+    public ResponseEntity<${domainWithUppercase}F03RespM01> update${domainWithUppercase}(@Validated @RequestBody ${domainWithUppercase}F03ReqM01 ${domain}F03ReqM01) throws Exception {
+        ${domainWithUppercase}F03RespM01 result = ${domain}F03.exec(${domain}F03ReqM01);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * paging query - POST
+     * @param ${domain}F04ReqM01 request parameters
+     * @return response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/${domain}/page", method = {RequestMethod.POST})
+    public ResponseEntity<${domainWithUppercase}F04RespM01> find${domainWithUppercase}ByPage(@Validated @RequestBody ${domainWithUppercase}F04ReqM01 ${domain}F04ReqM01) throws Exception {
+        ${domainWithUppercase}F04RespM01 result = ${domain}F04.exec(${domain}F04ReqM01);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * query by id - GET
+     * @param id ID
+     * @return response
+     * @throws Exception
+     */
+    @RequestMapping("/${domain}/{id}")
+    public ResponseEntity<${domainWithUppercase}F04RespM01> find${domainWithUppercase}ById(@PathVariable int id) throws Exception {
+        ${domainWithUppercase}F04ReqM01 ${domain}F04ReqM01 = new ${domainWithUppercase}F04ReqM01();
+        ${domain}F04ReqM01.setId(id);
+        ${domainWithUppercase}F04RespM01 result = ${domain}F04.exec(${domain}F04ReqM01);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+}

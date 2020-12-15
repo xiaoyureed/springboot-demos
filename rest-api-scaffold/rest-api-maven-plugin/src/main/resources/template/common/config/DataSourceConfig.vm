@@ -1,0 +1,183 @@
+package ${packageName}.common.config;
+
+import com.github.pagehelper.PageInterceptor;
+import ${packageName}.common.dao.ReadDao;
+import ${packageName}.common.dao.WriteDao;
+import ${packageName}.common.dao.impl.mybatis.ReadDaoMybatisImpl;
+import ${packageName}.common.dao.impl.mybatis.WriteDaoMybatisImpl;
+import ${packageName}.common.util.StringUtils;
+import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ParameterMapping;
+import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.session.RowBounds;
+import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+@org.springframework.context.annotation.Configuration
+public class DataSourceConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(DataSourceConfig.class);
+
+    @Value("${${mapperLocations}}")
+    private String mapperLocation;
+
+    @Bean
+    public SqlSessionFactoryBean sqlSessionFactoryBean(DataSource dataSource) throws IOException {
+        SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
+        factoryBean.setDataSource(dataSource);
+        if (StringUtils.isInvalid(mapperLocation)) {
+            throw new RuntimeException(">>> mapper directory is invalid -> " + mapperLocation);
+        }
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        factoryBean.setMapperLocations(resolver.getResources(mapperLocation));
+        factoryBean.setPlugins(new Interceptor[]{this.pageHelper(), sql()});
+        return factoryBean;
+    }
+
+    private Interceptor pageHelper() {
+        PageInterceptor interceptor = new PageInterceptor();
+
+        Properties properties = new Properties();
+        properties.setProperty("offsetAsPageNum", "true");
+        properties.setProperty("rowBoundsWithCount", "true");
+        properties.setProperty("pageSizeZero", "true");
+
+        interceptor.setProperties(properties);
+        return interceptor;
+    }
+
+    private Interceptor sql() {
+        return new SqlInterceptor();
+    }
+
+    /**
+     * 打印 SQL
+     */
+    @Intercepts({@Signature(
+            type = Executor.class,
+            method = "update",
+            args = {MappedStatement.class, Object.class}
+    ), @Signature(type = Executor.class, method = "query",
+            args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})})
+    private static class SqlInterceptor implements Interceptor {
+        @Override
+        public Object intercept(Invocation invocation) throws Throwable {
+            MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
+            Object parameter = null;
+            if (invocation.getArgs().length > 1) {
+                parameter = invocation.getArgs()[1];
+            }
+
+            BoundSql boundSql = mappedStatement.getBoundSql(parameter);
+            Configuration configuration = mappedStatement.getConfiguration();
+            Object returnVal = invocation.proceed();
+
+            //获取sql语句
+            String sql = getSql(configuration, boundSql);
+            log.info("Mybatis 拦截器获取SQL:{}",sql);
+            return returnVal;
+        }
+
+        @Override
+        public Object plugin(Object o) {
+            // 表示始终拦截
+            return Plugin.wrap(o, this);
+        }
+
+        @Override
+        public void setProperties(Properties properties) {
+        }
+
+        /**
+         * 获取SQL
+         */
+        private String getSql(Configuration configuration, BoundSql boundSql) {
+            Object parameterObject = boundSql.getParameterObject();
+            List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+            String sql = boundSql.getSql().replaceAll("[\\s]+", " ");
+            if (parameterObject == null || parameterMappings.size() == 0) {
+                return sql;
+            }
+            TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+            if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+                sql = sql.replaceFirst("\\?", getParameterValue(parameterObject));
+            } else {
+                MetaObject metaObject = configuration.newMetaObject(parameterObject);
+                for (ParameterMapping parameterMapping : parameterMappings) {
+                    String propertyName = parameterMapping.getProperty();
+                    if (metaObject.hasGetter(propertyName)) {
+                        Object obj = metaObject.getValue(propertyName);
+                        sql = sql.replaceFirst("\\?", getParameterValue(obj));
+                    } else if (boundSql.hasAdditionalParameter(propertyName)) {
+                        Object obj = boundSql.getAdditionalParameter(propertyName);
+                        sql = sql.replaceFirst("\\?", getParameterValue(obj));
+                    }
+                }
+            }
+            return sql;
+        }
+
+        private String getParameterValue(Object obj) {
+            String value = null;
+            if (obj instanceof String) {
+                value = "'" + obj.toString() + "'";
+            } else if (obj instanceof Date) {
+                DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.CHINA);
+                value = "'" + formatter.format(obj) + "'";
+            } else {
+                if (obj != null) {
+                    value = obj.toString();
+                } else {
+                    value = "";
+                }
+            }
+            return value;
+        }
+    }
+
+    @Bean
+    public ReadDao readDao(SqlSessionFactoryBean factoryBean) {
+        ReadDaoMybatisImpl readDao = new ReadDaoMybatisImpl();
+        try {
+            readDao.setSqlSessionFactory(factoryBean.getObject());
+        } catch (Exception e) {
+            log.error(">>> Error of register [readDao]", e);
+        }
+        return readDao;
+    }
+
+    @Bean
+    public WriteDao writeDao(SqlSessionFactoryBean factoryBean) {
+        WriteDaoMybatisImpl writeDao = new WriteDaoMybatisImpl();
+        try {
+            writeDao.setSqlSessionFactory(factoryBean.getObject());
+        } catch (Exception e) {
+            log.error(">>> Error of registering [writerDao]", e);
+        }
+        return writeDao;
+    }
+
+
+}

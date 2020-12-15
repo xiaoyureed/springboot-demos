@@ -1,0 +1,42 @@
+package ${packageName}.service;
+
+import ${packageName}.common.Service;
+import ${packageName}.common.dao.ReadDao;
+import ${packageName}.common.util.BeanUtils;
+import ${packageName}.pojo.dto.${domainWithUppercase}F04ReqM01;
+import ${packageName}.pojo.dto.${domainWithUppercase}F04RespM01;
+import ${packageName}.pojo.dto.${domainWithUppercase}F04RespS01;
+import ${packageName}.sql.dto.${domainWithUppercase}F04InputM01;
+import ${packageName}.sql.dto.${domainWithUppercase}F04OutputM01;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+* Query service for [${domain}]
+*
+* @author CODE-GENERATOR
+* @since ${now}
+*/
+@org.springframework.stereotype.Service
+@Slf4j
+@Transactional
+public class ${domainWithUppercase}F04Service implements Service<${domainWithUppercase}F04ReqM01, ${domainWithUppercase}F04RespM01> {
+    @Autowired
+    private ReadDao readDao;
+
+    @Override
+    public ${domainWithUppercase}F04RespM01 exec(${domainWithUppercase}F04ReqM01 req) throws Exception {
+        ${domainWithUppercase}F04InputM01 ${domain}F04InputM01 = new ${domainWithUppercase}F04InputM01();
+        BeanUtils.copyObject(req, ${domain}F04InputM01);
+
+        List<${domainWithUppercase}F04OutputM01> ${domain}F04OutputM01List = readDao.readForList("${domain}F04", ${domain}F04InputM01);
+
+        List<${domainWithUppercase}F04RespS01> data   = BeanUtils.copyList(${domain}F04OutputM01List, ${domainWithUppercase}F04RespS01.class);
+        ${domainWithUppercase}F04RespM01       result = new ${domainWithUppercase}F04RespM01();
+        result.setData(data);
+        return result;
+    }
+}

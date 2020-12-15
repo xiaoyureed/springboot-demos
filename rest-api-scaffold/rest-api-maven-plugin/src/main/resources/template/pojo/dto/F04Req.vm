@@ -1,0 +1,20 @@
+package ${packageName}.pojo.dto;
+
+import lombok.Data;
+
+#foreach(${fullTypeName} in ${fullTypeNames})
+import ${fullTypeName};
+#end
+
+/**
+* Request DTO for [${domain}] query.
+*
+* @author CODE-GENERATOR
+* @since ${now}
+*/
+@Data
+public class ${domainWithUppercase}F04ReqM01 {
+#foreach(${key} in ${columnTypeMap.keySet()})
+    private ${columnTypeMap.get(${key})} ${key};
+#end
+}

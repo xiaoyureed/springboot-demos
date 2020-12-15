@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ Sql for F01, [${domain}] create.
+ @author CODE-GENERATOR
+ @since ${now}
+ -->
+<mapper namespace="${domainWithUppercase}">
+    <!--attention: no "," symbol in the end of the last field-->
+    <insert id="${domain}F01" parameterType="${packageName}.sql.dto.${domainWithUppercase}F01InputM01"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ${table} (
+        <trim suffixOverrides=",">
+            #foreach(${column} in ${columnFieldMap.keySet()})
+            ${column},
+            #end
+        </trim>
+        )
+        VALUES (
+        <trim suffixOverrides=",">
+            #foreach(${key} in ${columnFieldMap.keySet()})
+            #{${columnFieldMap.get(${key})}},
+            #end
+        </trim>
+        )
+    </insert>
+
+</mapper>

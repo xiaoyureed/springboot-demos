@@ -1,0 +1,18 @@
+package ${packageName}.common.util;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public final class StringUtils {
+    private StringUtils() {
+    }
+
+    public static boolean isInvalid(String target) {
+        return target == null || "".equals(target.trim());
+    }
+
+    public static boolean isValid(String target) {
+        return !isInvalid(target);
+    }
+}

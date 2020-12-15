@@ -1,0 +1,89 @@
+package ${packageName}.common.dao.impl.mybatis;
+
+import com.github.pagehelper.PageHelper;
+import ${packageName}.common.Constants;
+import ${packageName}.common.PagingInfo;
+import ${packageName}.common.ThreadLocalContext;
+import ${packageName}.common.dao.ReadDao;
+import ${packageName}.common.util.StringUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StopWatch;
+
+import java.util.List;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public class ReadDaoMybatisImpl extends SqlSessionDaoSupport implements ReadDao {
+
+    private static final Logger log = LoggerFactory.getLogger(ReadDaoMybatisImpl.class);
+
+    public <T> T readForObject(String sqlId, Object params) throws Exception {
+        log.info(">>> readForObject, sqlId={}, params={}", sqlId, params);
+        SqlSession session = this.getSqlSession();
+
+        StopWatch watch = new StopWatch(sqlId);
+        watch.start();
+        T result;
+        try {
+            result = session.selectOne(sqlId, params);
+        } catch (Exception e) {
+            log.error(">>> Error of select one, sql id = {}", sqlId);
+            e.printStackTrace();
+            throw e;
+        }
+        watch.stop();
+        log.info(">>> readForObject, time={} ms", watch.getTotalTimeMillis());
+
+        return result;
+    }
+
+    public <T> List<T> readForList(String sqlId, Object params) throws Exception {
+        log.info(">>> readForList, sql id = {}, params = {}", sqlId, params);
+        SqlSession sqlSession = this.getSqlSession();
+
+        PagingInfo pagingInfo = ThreadLocalContext.get(Constants.CONTEXT_KEY_PAGING, PagingInfo.class);
+        if (pagingInfo != null) {
+            return this.readForListByPage(sqlId, params, pagingInfo);
+        }
+
+        return doSelect(sqlId, params, sqlSession);
+    }
+
+    private <T> List<T> doSelect(String sqlId, Object params, SqlSession sqlSession) throws Exception {
+        StopWatch stopWatch = new StopWatch(sqlId);
+        stopWatch.start();
+        List<T> result;
+        try {
+            result = sqlSession.selectList(sqlId, params);
+        } catch (Exception e) {
+            log.error(">>> Error of select list, sql id = {}", sqlId);
+            e.printStackTrace();
+            throw e;
+        }
+        stopWatch.stop();
+        log.info(">>> time = {} ms", stopWatch.getTotalTimeMillis());
+
+        return result;
+    }
+
+    public <T> List<T> readForListByPage(String sqlId, Object params, PagingInfo page) throws Exception {
+        SqlSession sqlSession = this.getSqlSession();
+
+        int    pageNum  = page.getPageNum();
+        int    pageSize = page.getPageSize();
+        String orderBy  = page.getOrderBy();
+        if (pageNum > 0 && pageSize > 0) {
+            PageHelper.startPage(pageNum, pageSize);
+        }
+        if (!StringUtils.isInvalid(orderBy)) {
+            PageHelper.orderBy(orderBy);
+        }
+
+        return doSelect(sqlId, params, sqlSession);
+    }
+}

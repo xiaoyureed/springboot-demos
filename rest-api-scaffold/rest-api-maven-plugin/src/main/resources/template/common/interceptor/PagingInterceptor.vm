@@ -1,0 +1,50 @@
+package ${packageName}.common.interceptor;
+
+import ${packageName}.common.Constants;
+import ${packageName}.common.PagingInfo;
+import ${packageName}.common.ThreadLocalContext;
+import ${packageName}.common.util.StringUtils;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public class PagingInterceptor implements HandlerInterceptor {
+
+    @Override
+    public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object handler) throws Exception {
+        String pageSize = req.getHeader(Constants.HEADER_NAME_PAGE_SIZE);
+        String pageNum  = req.getHeader(Constants.HEADER_NAME_PAGE_NUM);
+        String orderBy  = req.getHeader(Constants.HEADER_NAME_ORDERBY);
+        String language = req.getHeader(Constants.HEADER_NAME_LANGUAGE);
+
+        if (StringUtils.isValid(pageSize) && StringUtils.isValid(pageNum)) {
+            PagingInfo pagingInfo = new PagingInfo();
+            pagingInfo.setPageNum(Integer.valueOf(pageNum));
+            pagingInfo.setPageSize(Integer.valueOf(pageSize));
+            if (StringUtils.isValid(orderBy)) {
+                pagingInfo.setOrderBy(orderBy);
+            }
+            ThreadLocalContext.set(Constants.CONTEXT_KEY_PAGING, pagingInfo);
+        }
+        if (StringUtils.isValid(language)) {
+            ThreadLocalContext.set(Constants.CONTEXT_KEY_LANGUAGE, language);
+        }
+        return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        ThreadLocalContext.clear();
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+
+    }
+}

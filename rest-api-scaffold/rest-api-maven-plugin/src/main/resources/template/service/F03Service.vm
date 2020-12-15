@@ -1,0 +1,36 @@
+package ${packageName}.service;
+
+import ${packageName}.common.Service;
+import ${packageName}.common.dao.WriteDao;
+import ${packageName}.common.util.BeanUtils;
+import ${packageName}.pojo.dto.${domainWithUppercase}F03ReqM01;
+import ${packageName}.pojo.dto.${domainWithUppercase}F03RespM01;
+import ${packageName}.sql.dto.${domainWithUppercase}F03InputM01;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+* Update service for [${domain}]
+*
+* @author CODE-GENERATOR
+* @since ${now}
+*/
+@org.springframework.stereotype.Service
+@Slf4j
+@Transactional
+public class ${domainWithUppercase}F03Service implements Service<${domainWithUppercase}F03ReqM01, ${domainWithUppercase}F03RespM01> {
+@Autowired
+private WriteDao writeDao;
+
+@Override
+public ${domainWithUppercase}F03RespM01 exec(${domainWithUppercase}F03ReqM01 req) throws Exception {
+${domainWithUppercase}F03InputM01 ${domain}F03InputM01 = new ${domainWithUppercase}F03InputM01();
+BeanUtils.copyObject(req, ${domain}F03InputM01);
+
+int rows = writeDao.write("${domain}F03", ${domain}F03InputM01);
+
+${domainWithUppercase}F03RespM01 result = new ${domainWithUppercase}F03RespM01();
+return result;
+}
+}

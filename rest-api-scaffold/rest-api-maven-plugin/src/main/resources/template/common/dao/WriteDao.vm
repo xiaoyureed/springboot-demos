@@ -1,0 +1,14 @@
+package ${packageName}.common.dao;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public interface WriteDao {
+    /**
+     * @param sqlId sql id
+     * @param params parameters
+     * @return affected rows
+     */
+    int write(String sqlId, Object params) throws Exception;
+}

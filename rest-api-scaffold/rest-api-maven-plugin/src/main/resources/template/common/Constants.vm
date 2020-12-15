@@ -1,0 +1,24 @@
+package ${packageName}.common;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public final class Constants {
+    private Constants() {
+    }
+
+    /**
+     * http header name
+     */
+    public static final String HEADER_NAME_PAGE_NUM  = "pageNum";
+    public static final String HEADER_NAME_PAGE_SIZE = "pageSize";
+    public static final String HEADER_NAME_ORDERBY   = "orderBy";
+    public static final String HEADER_NAME_LANGUAGE  = "language";
+
+    /**
+     * ThreadLocalContext key
+     */
+    public static final String CONTEXT_KEY_PAGING   = "paging";
+    public static final String CONTEXT_KEY_LANGUAGE = "language";
+}

@@ -1,0 +1,31 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: freemarker-h2-jpa
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:app;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      format_sql: true
+  h2:
+    console:
+      settings:
+        web-allow-others: true
+      enabled: true
+  freemarker:
+    suffix: .ftl
+    template-loader-path: classpath:/templates/
+    content-type: text/html
+    enabled: true
+  resources:
+    #default resources handling
+    add-mappings: false
+  mvc:
+    #throw exception directly when no handler mapping
+    throw-exception-if-no-handler-found: true

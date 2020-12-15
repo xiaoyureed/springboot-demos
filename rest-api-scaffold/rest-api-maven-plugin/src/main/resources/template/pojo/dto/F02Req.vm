@@ -1,0 +1,14 @@
+package ${packageName}.pojo.dto;
+
+import lombok.Data;
+
+/**
+* Request DTO for [${domain}] delete
+*
+* @author CODE-GENERATOR
+* @since ${now}
+*/
+@Data
+public class ${domainWithUppercase}F02ReqM01 {
+    private Long id;
+}

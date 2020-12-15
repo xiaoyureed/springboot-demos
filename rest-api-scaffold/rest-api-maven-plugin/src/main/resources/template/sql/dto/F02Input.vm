@@ -1,0 +1,14 @@
+package ${packageName}.sql.dto;
+
+import lombok.Data;
+
+/**
+* Sql input DTO for delete
+*
+* @author CODE-GENERATOR
+* @since ${now}
+*/
+@Data
+public class ${domainWithUppercase}F02InputM01 {
+    private Long id;
+}

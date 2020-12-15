@@ -1,0 +1,41 @@
+package ${packageName}.common.dao;
+
+import ${packageName}.common.PagingInfo;
+
+import java.util.List;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public interface ReadDao {
+    /**
+     * execute sql and return a single object
+     *
+     * @param sqlId  sql id
+     * @param params parameters
+     * @param <T>    target type
+     * @return
+     */
+    <T> T readForObject(String sqlId, Object params) throws Exception;
+
+    /**
+     * execute the specific sql and return a list of object
+     *
+     * @param sqlId  sql id
+     * @param params parameters
+     * @param <T>    target type
+     * @return a list
+     */
+    <T> List<T> readForList(String sqlId, Object params) throws Exception;
+
+    /**
+     * execute the specific sql and return a list of object with pagination;
+     *
+     * @param sqlId sql id
+     * @param page paging information
+     * @param <T> target type
+     * @return a list
+     */
+    <T> List<T> readForListByPage(String sqlId, Object params, PagingInfo page) throws Exception;
+}

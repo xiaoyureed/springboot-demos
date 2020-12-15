@@ -1,0 +1,14 @@
+package ${packageName}.common;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public interface Service<Q, P> {
+    /**
+     * @param req request
+     * @return response
+     * @throws Exception
+     */
+    P exec(Q req) throws Exception;
+}

@@ -1,0 +1,60 @@
+package ${packageName}.common.util;
+
+import org.springframework.cglib.beans.BeanCopier;
+import org.springframework.cglib.core.Converter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public final class BeanUtils {
+    private BeanUtils() {
+    }
+
+    /**
+     * copy object
+     * @param source source
+     * @param target target
+     * @param <S> source type
+     * @param <T> target type
+     */
+    public static <S, T> void copyObject(S source, T target) {
+        BeanCopier beanCopier = BeanCopier.create(source.getClass(), target.getClass(), false);
+        beanCopier.copy(source, target, null);
+    }
+
+    /**
+     * copy with converter
+     */
+    public static <S, T> void copyObject(S source, T target, Converter converter) {
+        BeanCopier beanCopier = BeanCopier.create(source.getClass(), target.getClass(), true);
+        beanCopier.copy(source, target, converter);
+    }
+
+    /**
+     * copy list
+     * @param source source list
+     * @param targetType target class
+     * @param <S> source type
+     * @param <T> target type
+     * @return target list
+     */
+    public static <S, T> ArrayList<T> copyList(List<S> source, Class<T> targetType) {
+        final ArrayList<T> result = new ArrayList<>();
+        source.forEach(each -> {
+            T target;
+            try {
+                target = targetType.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                throw new RuntimeException(">>> Error of reflection while copyList");
+            }
+            copyObject(each, target);
+            result.add(target);
+        });
+        return result;
+    }
+}

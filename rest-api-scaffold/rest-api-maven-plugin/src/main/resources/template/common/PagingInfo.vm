@@ -1,0 +1,68 @@
+package ${packageName}.common;
+
+/**
+ * @author CODE-GENERATOR
+ * @date ${now}
+ */
+public class PagingInfo {
+    /**
+     * 每页显示数量
+     */
+    private int    pageSize;
+    /**
+     * 当前第几页
+     */
+    private int    pageNum;
+    /**
+     * 总记录数
+     */
+    private int    totalRecord;
+    /**
+     * 总页数
+     */
+    private int    totalPage;
+    /**
+     * 排序字段
+     */
+    private String orderBy;
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public int getTotalRecord() {
+        return totalRecord;
+    }
+
+    public void setTotalRecord(int totalRecord) {
+        this.totalRecord = totalRecord;
+    }
+
+    public int getTotalPage() {
+        return totalPage;
+    }
+
+    public void setTotalPage(int totalPage) {
+        this.totalPage = totalPage;
+    }
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
+}
