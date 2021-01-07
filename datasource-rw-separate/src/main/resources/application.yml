@@ -1,0 +1,12 @@
+spring:
+  datasource:
+     master:
+       driver-class-name:
+       url:
+       password:
+       username:
+     slave1:
+       driver-class-name:
+       url:
+       password:
+       username:

@@ -1,0 +1,6 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        #visit http://localhost:8080/actuator/health
+        include: health, info
