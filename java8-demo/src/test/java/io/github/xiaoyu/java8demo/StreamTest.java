@@ -88,7 +88,11 @@ public class StreamTest {
         List<String> list2 = Arrays.asList("1", "2", "3");
         List<List<String>> list3 = Arrays.asList(list1, list2);
 
-         List<String> result = list3.stream().flatMap(Collection::stream).collect(Collectors.toList());
+         List<String> result = list3.stream()
+                 .flatMap((List<String> x) -> {
+                     return x.stream();
+                 })
+                 .collect(Collectors.toList());
 
     }
 
@@ -279,6 +283,14 @@ public class StreamTest {
                 .collect(personNameCollector);
 
         System.out.println(names);  // MAX | PETER | PAMELA | DAVID
+    }
+
+    @Test
+    void testGroupBy() {
+        //根据多个属性（年龄和性别）进行分组
+        //得到的集合是一个年龄下分为两种性别（嵌套调用groupby）
+        //Map<String, Map<String, List>> groupedMap = list.stream()
+        //.collect(Collectors.groupingBy(Student::getAge, Collectors.groupingBy(Student::getSex)));
     }
 
     @Test
