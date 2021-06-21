@@ -17,8 +17,8 @@ public class MockitoTest {
     @Test
     public void testMockito() {
         List<String> mockList = mock(List.class);
-        mockList.add("hello"); // add() is not been called actually
-        log.info(">>> mockList: {}", mockList);
+        mockList.add("hello"); // add() is not been called actually; add 方法实际未被调用
+        log.info(">>> mockList: {}", mockList.get(0));// null
         mockList.clear();
 
         verify(mockList).add("hello"); // 监控 add("hello"), 方法被调用 (参数值必须完全一样)

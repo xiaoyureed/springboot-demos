@@ -11,7 +11,7 @@
 
 	<version>0.0.1-SNAPSHOT</version>
 	<groupId>io.github.xiaoyureed</groupId>
-	<artifactId>mockito-mybatis-plus-demo</artifactId>
+	<artifactId>mybatis-plus-mockito</artifactId>
 
 	<dependencies>
 		<dependency>
